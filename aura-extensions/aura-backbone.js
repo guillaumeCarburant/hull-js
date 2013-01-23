@@ -2,15 +2,14 @@
   var historyStarted = false;
   define({
     name: "The Back of the Bone",
-    config: {
-      require: {
-        paths:  { backbone: 'backbone/backbone' },
-        shim:   { backbone: { exports: 'Backbone', deps: ['underscore', 'jquery'] } }
-      }
+
+    require: {
+      paths:  { backbone: 'components/backbone/backbone' },
+      shim:   { backbone: { exports: 'Backbone', deps: ['underscore', 'jquery'] } }
     },
 
-    init: function(env) {
-      var core = env.core, sandbox = env.sandbox;
+    init: function(app) {
+      var core = app.core, sandbox = app.sandbox;
       var Backbone = require('backbone');
 
       core.mvc =  Backbone;
@@ -29,9 +28,9 @@
 
     },
 
-    afterAppStart: function(env) {
+    afterAppStart: function(app) {
       if (!historyStarted) {
-        env.core.mvc.history.start();
+        app.core.mvc.history.start();
         historyStarted = true;
       }
     }

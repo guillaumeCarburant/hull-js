@@ -35,12 +35,12 @@ define ->
       shim:
         facebook: { exports: 'FB' }
 
-  init: (env)->
-    dfd = env.core.data.deferred()
-    FB.init(env.config.services.settings.facebook_app)
+  init: (app)->
+    dfd = app.core.data.deferred()
+    FB.init(app.config.services.settings.facebook_app)
     FB.getLoginStatus dfd.resolve
-    env.core.services.add([ { path: "/facebook/fql",    handler: fql } ])
-    env.core.services.add([ { path: "/facebook/*path",  handler: api } ])
+    app.core.services.add([ { path: "/facebook/fql",    handler: fql } ])
+    app.core.services.add([ { path: "/facebook/*path",  handler: api } ])
 
     dfd
 

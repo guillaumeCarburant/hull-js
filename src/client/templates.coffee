@@ -1,22 +1,22 @@
 define ->
-  init: (env)->
+  init: (app)->
     setupTemplate = (tplSrc, name) ->
-      compiled = env.core.template.hbs(tplSrc)
+      compiled = app.core.template.hbs(tplSrc)
       Handlebars.registerPartial(name, compiled)
       compiled
 
-    env.core.template.load = (names, ref, format="hbs")->
+    app.core.template.load = (names, ref, format="hbs")->
       loadedTemplates = {}
       names = [names] if _.isString(names)
       paths = []
-      dfd   = env.core.data.deferred()
+      dfd   = app.core.data.deferred()
       ret = {}
       for name in names
         path = "#{ref}/#{name}"
         # if require.defined(path)
         #   ret[tpl] = require(path)
         # else
-        localTpl = env.core.dom.find("script[data-hull-template='#{path}']")
+        localTpl = app.core.dom.find("script[data-hull-template='#{path}']")
         if localTpl.length
           parsed = setupTemplate(localTpl.text(), name);
           ret[name] = parsed
@@ -36,5 +36,5 @@ define ->
           dfd.reject(err))
       else
         dfd.resolve(ret)
-      dfd.promise() 
-   
+      dfd.promise()
+

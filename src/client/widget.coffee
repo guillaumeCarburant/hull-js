@@ -170,8 +170,8 @@ define ['backbone', 'underscore'], (Backbone, _)->
 
 
 
-  (env)->
-    env.core.registerWidgetType("Hull", HullWidget.prototype)
+  (app)->
+    app.core.registerWidgetType("Hull", HullWidget.prototype)
 
 
 

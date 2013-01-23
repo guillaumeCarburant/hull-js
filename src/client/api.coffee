@@ -1,21 +1,20 @@
 define ->
 
-  (env)->
+  (app)->
 
     rpc = false
 
-    config:
-      require:
-        paths:
-          easyXDM: 'easyXDM/easyXDM'
-          backbone: 'backbone/backbone'
-        shim:
-          easyXDM: { exports: 'easyXDM' }
-          backbone: { exports: 'Backbone', deps: ['underscore', 'jquery'] }
+    require:
+      paths:
+        easyXDM: 'components/easyXDM/easyXDM'
+        backbone: 'components/backbone/backbone'
+      shim:
+        easyXDM: { exports: 'easyXDM' }
+        backbone: { exports: 'Backbone', deps: ['underscore', 'jquery'] }
 
-    init: (env)->
-      core    = env.core
-      sandbox = env.sandbox
+    init: (app)->
+      core    = app.core
+      sandbox = app.sandbox
 
       _         = require('underscore')
       Backbone  = require('backbone')
@@ -273,8 +272,8 @@ define ->
 
       onRemoteReady = (remoteConfig)->
         data = remoteConfig.data
-        env.config.services = remoteConfig.services
-        env.sandbox.config.services = remoteConfig.services
+        app.config.services   = remoteConfig.services
+        app.sandbox.services  = remoteConfig.services
         for m in ['me', 'app', 'org']
           attrs = data[m]
           if attrs
@@ -284,7 +283,7 @@ define ->
         initialized.resolve(data)
 
       rpc = new easyXDM.Rpc({
-        remote: "#{env.config.orgUrl}/api/v1/#{env.config.appId}/remote.html"
+        remote: "#{app.config.orgUrl}/api/v1/#{app.config.appId}/remote.html"
       }, {
         remote: { message: {}, ready: {} }
         local:  { message: onRemoteMessage, ready: onRemoteReady }
