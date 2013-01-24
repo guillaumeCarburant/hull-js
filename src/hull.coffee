@@ -5,11 +5,11 @@ define ['components/aura-express/lib/aura'], (Aura)->
   myApp =
     name: 'Hull'
     afterAppStart: (app)->
-      sb = app.createSandbox();
+      sb     = app.createSandbox()
+      sb.me  = sb.data.api.model('me')
+      sb.app = sb.data.api.model('app')
+      sb.org = sb.data.api.model('org')
       window.Hull = sb;
-      Hull.me     = sb.data.api.model('me');
-      Hull.app    = sb.data.api.model('app');
-      Hull.org    = sb.data.api.model('org');
 
 
   if window.opener && window.opener.Hull
@@ -21,11 +21,9 @@ define ['components/aura-express/lib/aura'], (Aura)->
 
   (config, afterInit)->
     return hull if hull && hull.app
-    hull = { config }
     config.namespace = "hull"
-    hull.app = Aura(config)
-    console.warn("Init aura with config: ", config);
-    initProcess = hull.app
+    hull = Aura(config)
+    init = hull
       .use('aura-extensions/aura-handlebars')
       .use('aura-extensions/aura-backbone')
       .use('lib/client/handlebars-helpers')
@@ -37,9 +35,9 @@ define ['components/aura-express/lib/aura'], (Aura)->
       .use(myApp)
       .start({ widgets: 'body' })
 
-    initProcess.fail (err)-> throw err
+    init.fail (err)-> throw err
 
-    initProcess.done(afterInit)
+    init.done(afterInit) if afterInit
 
     return hull
 
