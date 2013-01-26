@@ -1,14 +1,9 @@
-define(['lib/hull'], function(Hull) {
+require(['lib/hull'], function(Hull) {
   Hull({
-    appId: 'YOUR_API_KEY',
-    orgUrl: 'http://your.app.domain.tld',
-    /*
-    name: "name your app",
-    debug: true,
-    widgets: {
-      sources: { 'default' : 'widgets/' }
-    }
-    */
+    appId: '50f9028309e50d2574000005',
+    orgUrl: 'http://org-name.hullapp.dev',
+    debug: true
   });
 });
+
 
