@@ -1,16 +1,24 @@
 define ['components/aura-express/lib/aura'], (Aura)->
 
+  window.Hull = Hull = _.extend({
+    version: __version__,
+    templates: {}
+    widget: (widgetName, widgetDef)->
+      widgetDef.type ?= "Hull"
+      define("__widget__$#{widgetName}@default", widgetDef)
+      return widgetDef
+  }, window.Hull || {})
+
   hull = null
 
   myApp =
     name: 'Hull'
     afterAppStart: (app)->
-      sb     = app.createSandbox()
-      sb.me  = sb.data.api.model('me')
-      sb.app = sb.data.api.model('app')
-      sb.org = sb.data.api.model('org')
-      window.Hull = sb;
-
+      sb          = app.createSandbox()
+      Hull        = _.extend(Hull, sb)
+      Hull.me     = sb.data.api.model('me')
+      Hull.app    = sb.data.api.model('app')
+      Hull.org    = sb.data.api.model('org')
 
   if window.opener && window.opener.Hull
     try
