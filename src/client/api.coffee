@@ -273,7 +273,7 @@ define ->
       onRemoteReady = (remoteConfig)->
         data = remoteConfig.data
         app.config.services = remoteConfig.services
-        app.config.widgets.sources.hull = remoteConfig.baseUrl + '/widgets'
+        app.config.widgets.sources.hull ?= remoteConfig.baseUrl + '/widgets'
         app.sandbox.services = remoteConfig.services
         for m in ['me', 'app', 'org']
           attrs = data[m]

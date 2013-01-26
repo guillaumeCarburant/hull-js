@@ -3,8 +3,10 @@ Hello I am {{me.name}}
 <hr>
 <button data-hull-action='logout'>Bye bye !</button>
 {{else}}
-<p>Please <button data-hull-action='login' data-hull-provider='facebook'>Login with Facebook</button> first</p>
-<p>Please <button data-hull-action='login' data-hull-provider='twitter'>Login with Twitter</button> first</p>
-<p>Please <button data-hull-action='login' data-hull-provider='github'>Login with Github</button> first</p>
+
+<h1>Services</h1>
+{{#authServices}}
+<p>Please <button data-hull-action='login' data-hull-provider='{{.}}'>Login with {{.}}</button> first</p>
+{{/authServices}}
 
 {{/if}}
