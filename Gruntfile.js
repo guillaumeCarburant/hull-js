@@ -15,6 +15,8 @@ module.exports = function (grunt) {
 
   var pkg = grunt.file.readJSON('component.json');
 
+  grunt.log.writeln('Starting Grunt task, for hull v.' + pkg.version);
+
   var port = 3001;
 
   // ==========================================================================
@@ -184,6 +186,21 @@ module.exports = function (grunt) {
           out: 'tmp/widgets/upload/deps/jquery.fileupload.js'
         }
       },
+      image_upload: {
+        options: {
+          paths: {
+            jquery: "empty:",
+            "caman" : 'components/caman/dist/caman.full.pack',
+            "jquery.ui.widget" : 'components/jquery-file-upload/js/vendor/jquery.ui.widget',
+            "jquery.fileupload" : 'components/jquery-file-upload/js/jquery.fileupload'
+          },
+          include: [
+            'jquery.fileupload',
+            'caman'
+          ],
+          out: 'tmp/widgets/image_upload/deps/jquery.deps.js'
+        }
+      },
       registration: {
         options: {
           paths: {
@@ -283,7 +300,7 @@ module.exports = function (grunt) {
     hull_widgets: {
       hull: {
         src: 'widgets',
-        // before: ['requirejs:upload', 'requirejs:registration'],
+        before: ['requirejs:upload', 'requirejs:registration', 'requirejs:image_upload'],
         dest: 'dist/<%= pkg.version%>/widgets'
       }
     }
@@ -300,7 +317,7 @@ module.exports = function (grunt) {
         secret: '<%= aws.secret %>',
         bucket: '<%= aws.bucket %>',
         access: 'public-read',
-        // debug: true,
+        debug: true,
         options: {
           encodePaths: true,
           maxOperations: 20
