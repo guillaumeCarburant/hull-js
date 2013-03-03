@@ -29,13 +29,14 @@ define(['jquery.fileupload-ui'], {
 
   type: "Hull",
 
-  templates: [ 'upload', 'file_single', 'files', 'drop_zone'],
+  templates: [ 'upload', 'add_file', 'files', 'drop_zone', 'upload_file'],
 
   options:{
     maxNumberOfFiles : 1,
     maxFileSize      : 20000000,
     autoUpload       : false,
-    dragAndDrop      : true
+    dragAndDrop      : true,
+    previewSize:     700
   },
 
   fileTypes: {
@@ -49,7 +50,7 @@ define(['jquery.fileupload-ui'], {
   fileProcessors: {
     images: [
       { action: 'load', fileTypes: /^image\/(gif|jpeg|png)$/, maxFileSize: 20000000 },
-      { action: 'resize', maxWidth: 1440, maxHeight: 900 },
+      { action: 'resize', maxWidth: 500, maxHeight: 500 },
       { action: 'save' }
     ]
   },
@@ -83,10 +84,8 @@ define(['jquery.fileupload-ui'], {
   uploader_options: {
     dataType           : 'xml',
     minFileSize        : 0,
-    uploadTemplateId   : 'template-upload',
-    downloadTemplateId : 'template-download',
-    dropZone           : '[data-hull-container="dropzone"]',
-    filesContainer     : '[data-hull-container="files"]',
+    dropZone           : 'dropzone',
+    filesContainer     : 'files',
   },
 
   selectStoragePolicy: function () {
@@ -116,31 +115,44 @@ define(['jquery.fileupload-ui'], {
   },
 
   beforeRender: function (data) {
-    data.upload_policy = this.selectStoragePolicy();
-    return data;
-  },
-
-  afterRender: function () {
-    this.form = this.$el.find('form');
-    var opts = _.defaults(this.uploader_options, this.options, {
-      url                    : this.form.attr('action'),
-      method                 : this.form.attr('method'),
-      dropZone               : this.$el.find(this.uploader_options.dropZone),
+    // debugger
+    this.options = _.defaults(this.uploader_options, this.options, {
       previewMaxWidth        : this.options.previewSize,
       previewMaxHeight       : this.options.previewSize,
       previewSourceFileTypes : this.mimeTypes.images,
       acceptFileTypes        : this.fileTypes.images,
-      process                : this.fileProcessors.images
+      process                : this.fileProcessors.images,
+      uploadTemplateId       : null,
+      downloadTemplateId     : null,
+      uploadTemplate         : this._templates.upload_file
+    })
+    data.upload_policy = this.selectStoragePolicy();
+    data.options = this.options
+    return data;
+  },
+
+  getContainer: function(container_name){
+    return this.$el.find('[data-hull-container="'+container_name+'"]');
+  },
+  afterRender: function () {
+
+    this.form = this.$el.find('form');
+    this.dropzone = this.getContainer(this.options.dropZone);
+
+    this.options = _.extend(this.options, {
+      url                    : this.form.attr('action'),
+      method                 : this.form.attr('method'),
+      dropZone               : this.dropzone,
+      filesContainer         : this.getContainer(this.options.filesContainer)
     });
 
     // Hide Dropzone if we're not enabling it.
-    this.dropzone = this.$el.find(opts.dropZone);
-    if(!opts.dragAndDrop || !this.dropzone.length) {
+    if(!this.options.dragAndDrop || !this.dropzone.length) {
       this.dropzone.remove();
-      opts.dropZone = null;
+      this.options.dropZone = null;
     }
 
-    this.form.fileupload(opts);
+    this.form.fileupload(this.options);
     this.uploader = this.form.data('fileupload');
 
     var emit = this.sandbox.emit, form = this.form;

@@ -10,7 +10,7 @@
       <input type="hidden" name="{{key}}" value="{{value}}"/>
     {{/key_value}}
 
-    <div class="hull-upload__dropzone well hidden-phone hidden-phone-tablet" data-hull-container="dropzone">
+    <div class="hull-upload__dropzone well hidden-phone hidden-phone-tablet" data-hull-container="{{../options.dropZone}}">
       {{> image_upload/drop_zone}}
     </div>
 
@@ -19,7 +19,7 @@
     <input type="hidden" name="name" value=""/>
 
     <div class="hull-upload__filebutton fileupload-buttonbar">
-        {{> image_upload/file_single}}
+        {{> image_upload/add_file}}
     </div>
 
     <div class="fileupload-progress fade">
@@ -29,10 +29,9 @@
       <div class="progress-extended">&nbsp;</div>
     </div>
 
-
     <div class='error'></div>
 
-    <div class='filescontainer' data-hull-container="files">
+    <div class='filescontainer' data-hull-container="{{../options.filesContainer}}">
       {{> image_upload/files}}
     </div>
 
