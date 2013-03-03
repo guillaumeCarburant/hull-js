@@ -5,8 +5,8 @@
  *
  * ### Dependencies
  *
- * * ```jquery.fileupload```: This plugin uses [jQuery File upload plugin](https://github.com/blueimp/jQuery-File-Upload) to handle the file upload gracefully.
- *     Please note that the plugin is packaged within the widget so you don't have to struggle against the dependencies
+ * * ```jquery.fileupload-ui```: This plugin uses [jQuery File upload plugin](https://github.com/blueimp/jQuery-File-Upload) to handle the file upload gracefully.
+ *     Please note that the plugin is packaged within the widget so you don't have to struggle with the dependencies
  * * ``` storage```: This plugin requires that you have attahed an S3 storage to your Hull application in the admin.
  *
  * ### Templates
@@ -25,15 +25,25 @@
  * * ```hull.upload.progress```: Triggered when an upload is in progress. The total amount of data as well as the current amount of data transfered are available as a listener parameter.
  * * ```hull.upload.done```: Triggered when an upload has finished. References to the uploadded files are available in an Array as the first parameter to the listeners.
  */
-define(['jquery.fileupload'], {
+define(['jquery.fileupload-ui'], {
 
   type: "Hull",
 
-  templates: [ 'upload' ],
+  templates: [ 'upload', 'file_single', 'files', 'drop_zone'],
+
+  options:{
+    maxNumberOfFiles : 1,
+    maxFileSize      : 20000000,
+    autoUpload       : false,
+    dragAndDrop      : true
+  },
 
   fileTypes: {
-    images :  /(\.|\/)(gif|jpe?g|png)$/i,
-    videos :  /(\.|\/)(mov|mkv|mpg|wmv|mp4|m4v)$/i
+    images :  /(\.|\/)(gif|jpe?g|png)$/i
+  },
+
+  mimeTypes: {
+    images: /^image\/(gif|jpeg|png)$/
   },
 
   fileProcessors: {
@@ -71,15 +81,12 @@ define(['jquery.fileupload'], {
   ],
 
   uploader_options: {
-    autoUpload : true,
-    maxNumberOfFiles:1,
-    maxFileSize: 5000000,
-    minFileSize:0,
-    dropZone: '.dropzone',
-    type : 'POST'
-    // previewSourceMaxFileSize: 5000000
-    // previewMaxWidth: 80
-    // previewMaxHeight: 80
+    dataType           : 'xml',
+    minFileSize        : 0,
+    uploadTemplateId   : 'template-upload',
+    downloadTemplateId : 'template-download',
+    dropZone           : '[data-hull-container="dropzone"]',
+    filesContainer     : '[data-hull-container="files"]',
   },
 
   selectStoragePolicy: function () {
@@ -115,16 +122,26 @@ define(['jquery.fileupload'], {
 
   afterRender: function () {
     this.form = this.$el.find('form');
-    var opts = _.defaults(this.uploader_options, {
-      dataType:         'xml',
-      url:              this.form.attr('action'),
-      dropZone:         this.$el.find(this.uploader_options.dropZone),
-      acceptFileTypes:  this.fileTypes.images
+    var opts = _.defaults(this.uploader_options, this.options, {
+      url                    : this.form.attr('action'),
+      method                 : this.form.attr('method'),
+      dropZone               : this.$el.find(this.uploader_options.dropZone),
+      previewMaxWidth        : this.options.previewSize,
+      previewMaxHeight       : this.options.previewSize,
+      previewSourceFileTypes : this.mimeTypes.images,
+      acceptFileTypes        : this.fileTypes.images,
+      process                : this.fileProcessors.images
     });
+
+    // Hide Dropzone if we're not enabling it.
+    this.dropzone = this.$el.find(opts.dropZone);
+    if(!opts.dragAndDrop || !this.dropzone.length) {
+      this.dropzone.remove();
+      opts.dropZone = null;
+    }
 
     this.form.fileupload(opts);
     this.uploader = this.form.data('fileupload');
-    this.dropzone = this.$el.find(this.uploader_options.dropZone);
 
     var emit = this.sandbox.emit, form = this.form;
 
@@ -148,9 +165,18 @@ define(['jquery.fileupload'], {
   start: function () {
     this.form.fileupload('send', this.upload_data);
   },
-
   cancel: function () {},
   delete: function () {},
+
+  onAdd: function (e, data) {
+    var key = this.$el.find('[name="key"]');
+    var s = key.val();
+    key.val(s.replace('${filename}', "/" + data.files[0].name));
+    this.$el.find('[name="Filename"]').val(data.files[0].name);
+    this.$el.find('[name="name"]').val(data.files[0].name);
+    this.$el.find('[name="Content-Type"]').val(data.files[0].type);
+    return this.upload_data = data;
+  },
 
   onDrop: function () {
     this.dropzone.find('b').text('Thanks !');
@@ -162,16 +188,6 @@ define(['jquery.fileupload'], {
     clearTimeout(this.dragOverEffect);
     var self = this;
     this.dragOverEffect = setTimeout(function () { self.dropzone.removeClass('dragover'); }, 100);
-  },
-
-  onAdd: function (e, data) {
-    var key = this.$el.find('[name="key"]');
-    var s = key.val();
-    key.val(s.replace('${filename}', "/" + data.files[0].name));
-    this.$el.find('[name="Filename"]').val(data.files[0].name);
-    this.$el.find('[name="name"]').val(data.files[0].name);
-    this.$el.find('[name="Content-Type"]').val(data.files[0].type);
-    return this.upload_data = data;
   },
 
   onSend: function (e, data) {
@@ -230,56 +246,56 @@ define(['jquery.fileupload'], {
 
   initialize: function () {
     _.bindAll(this);
-      /*
-       * jQuery plugin adapter for CamanJS
-       */
-      if (window.jQuery) {
-        window.jQuery.fn.caman = function (callback) {
-          return this.each(function () {
-            Caman(this, callback);
-          });
-        };
-      }
+      // /*
+      //  * jQuery plugin adapter for CamanJS
+      //  */
+      // if (window.jQuery) {
+      //   window.jQuery.fn.caman = function (callback) {
+      //     return this.each(function () {
+      //       Caman(this, callback);
+      //     });
+      //   };
+      // }
 
-      var $input  = $('#input');
-      var $thumbs = $('#thumbs');
-      var $file_input = $('#file_input');
-      var $canvas = null;
-      var filters = ["vintage", "lomo", "clarity", "sinCity", "sunrise", "crossProcess", "orangePeel", "love", "grungy", "jarques", "pinhole", "oldBoot", "glowingSun", "hazyDays", "herMajesty", "nostalgia", "hemingway", "concentrate"];
+      // var $input  = $('#input');
+      // var $thumbs = $('#thumbs');
+      // var $file_input = $('#file_input');
+      // var $canvas = null;
+      // var filters = ["vintage", "lomo", "clarity", "sinCity", "sunrise", "crossProcess", "orangePeel", "love", "grungy", "jarques", "pinhole", "oldBoot", "glowingSun", "hazyDays", "herMajesty", "nostalgia", "hemingway", "concentrate"];
 
-      var renderImage = function renderImage(source, filter){
-        source.caman(function() {
-          this.revert();
-          this[filter]();
-          this.render();
-        });
-      }
+      // var renderImage = function renderImage(source, filter){
+      //   source.caman(function() {
+      //     this.revert();
+      //     this[filter]();
+      //     this.render();
+      //   });
+      // }
 
-      var loadImage = function loadImage(canvas){
-        $canvas = $(canvas);
-        $input.empty().append($canvas);
-        var $_thumbs = $('<div>').addClass('thumbs');
-        for (var i = filters.length - 1; i >= 0; i--) {
-          var f = filters[i]
-          var c = document.createElement('canvas');
-          c.width = c.height = 50;
-          var ctx = c.getContext('2d');
-          ctx.drawImage(canvas, 0, 0, 50, 50*canvas.height/canvas.width);
-          var $c = $(c).addClass('thumb').addClass(f).data('filter',f);
-          renderImage($c,f);
-          $c.appendTo($_thumbs);
-        };
-        $thumbs.empty().append($_thumbs);
-      }
+      // var loadImage = function loadImage(canvas){
+      //   $canvas = $(canvas);
+      //   $input.empty().append($canvas);
+      //   var $_thumbs = $('<div>').addClass('thumbs');
+      //   for (var i = filters.length - 1; i >= 0; i--) {
+      //     var f = filters[i]
+      //     var c = document.createElement('canvas');
+      //     c.width = c.height = 50;
+      //     var ctx = c.getContext('2d');
+      //     ctx.drawImage(canvas, 0, 0, 50, 50*canvas.height/canvas.width);
+      //     var $c = $(c).addClass('thumb').addClass(f).data('filter',f);
+      //     renderImage($c,f);
+      //     $c.appendTo($_thumbs);
+      //   };
+      //   $thumbs.empty().append($_thumbs);
+      // }
 
-      $thumbs.on('click','.thumb',function(e){
-        var f = $(this).data('filter');
-        renderImage($canvas, f);
-      })
+      // $thumbs.on('click','.thumb',function(e){
+      //   var f = $(this).data('filter');
+      //   renderImage($canvas, f);
+      // })
 
-      $file_input.on('change', function(e){
-        window.loadImage(e.target.files[0], loadImage, { maxWidth: 600, canvas:true, noRevoke:true });
-      });
+      // $file_input.on('change', function(e){
+      //   window.loadImage(e.target.files[0], loadImage, { maxWidth: 600, canvas:true, noRevoke:true });
+      // });
 
   }
 });

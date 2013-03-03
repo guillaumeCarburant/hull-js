@@ -183,7 +183,7 @@ module.exports = function (grunt) {
           include: [
             'jquery.fileupload'
           ],
-          out: 'tmp/widgets/upload/deps/jquery.fileupload.js'
+          out: 'tmp/widgets/upload/deps/jquery.deps.js'
         }
       },
       image_upload: {
@@ -191,11 +191,21 @@ module.exports = function (grunt) {
           paths: {
             jquery: "empty:",
             "caman" : 'components/caman/dist/caman.full.pack',
+            "tmpl" : 'components/blueimp-tmpl/tmpl.min',
+            "load-image" : 'components/blueimp-load-image/load-image.min',
+            "canvas-to-blob" : 'components/blueimp-canvas-to-blob/canvas-to-blob.min',
             "jquery.ui.widget" : 'components/jquery-file-upload/js/vendor/jquery.ui.widget',
-            "jquery.fileupload" : 'components/jquery-file-upload/js/jquery.fileupload'
+            "jquery.fileupload" : 'components/jquery-file-upload/js/jquery.fileupload',
+            "jquery.fileupload-ui" : 'components/jquery-file-upload/js/jquery.fileupload-ui',
+            "jquery.fileupload-fp" : 'components/jquery-file-upload/js/jquery.fileupload-fp'
           },
           include: [
             'jquery.fileupload',
+            'jquery.fileupload-ui',
+            'jquery.fileupload-fp',
+            'load-image',
+            'tmpl',
+            'canvas-to-blob',
             'caman'
           ],
           out: 'tmp/widgets/image_upload/deps/jquery.deps.js'

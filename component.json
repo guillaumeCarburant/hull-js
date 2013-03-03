@@ -12,6 +12,9 @@
     "analytics": "0.1.0",
     "base64": "0.1.1",
     "jquery-file-upload": "7.2.1",
+    "blueimp-load-image": "*",
+    "blueimp-tmpl": "*",
+    "blueimp-canvas-to-blob": "*",
     "caman": "*",
     "moment": "1.7.2",
     "underscore.string": "2.3.1"
