@@ -25,7 +25,7 @@
  * * ```hull.upload.progress```: Triggered when an upload is in progress. The total amount of data as well as the current amount of data transfered are available as a listener parameter.
  * * ```hull.upload.done```: Triggered when an upload has finished. References to the uploadded files are available in an Array as the first parameter to the listeners.
  */
-define(['jquery.fileupload-ui'], {
+define(['jquery.fileupload-fp','jquery.fileupload-ui'], {
 
   type: "Hull",
 
@@ -36,28 +36,49 @@ define(['jquery.fileupload-ui'], {
     maxFileSize      : 20000000,
     autoUpload       : false,
     dragAndDrop      : true,
-    previewSize:     700
+    previewSize      : 200
   },
 
   fileTypes: {
-    images :  /(\.|\/)(gif|jpe?g|png)$/i
+    images :  /(\.|\/)(gif|jpe?g|png|bmp)$/i
   },
 
   mimeTypes: {
-    images: /^image\/(gif|jpeg|png)$/
+    images: /^image\/(gif|jpeg|png|bmp)$/
   },
 
   fileProcessors: {
     images: [
-      { action: 'load', fileTypes: /^image\/(gif|jpeg|png)$/, maxFileSize: 20000000 },
+      { action: 'load', fileTypes: /^image\/(gif|jpeg|png|bmp)$/, maxFileSize: 20000000 },
       { action: 'resize', maxWidth: 500, maxHeight: 500 },
+      // { action: 'caman', filter:'sinCity' },
       { action: 'save' }
     ]
   },
 
+  filters : [
+    "vintage",
+    "lomo",
+    "clarity",
+    "sinCity",
+    "sunrise",
+    "crossProcess",
+    "orangePeel",
+    "love",
+    "grungy",
+    "jarques",
+    "pinhole",
+    "oldBoot",
+    "glowingSun",
+    "hazyDays",
+    "herMajesty",
+    "nostalgia",
+    "hemingway",
+    "concentrate"
+  ],
+
   uploader_events: [
     "fileuploadadd",
-    "fileuploadadded",
     "fileuploadalways",
     "fileuploadchange",
     "fileuploadcompleted",
@@ -115,7 +136,6 @@ define(['jquery.fileupload-ui'], {
   },
 
   beforeRender: function (data) {
-    // debugger
     this.options = _.defaults(this.uploader_options, this.options, {
       previewMaxWidth        : this.options.previewSize,
       previewMaxHeight       : this.options.previewSize,
@@ -126,6 +146,7 @@ define(['jquery.fileupload-ui'], {
       downloadTemplateId     : null,
       uploadTemplate         : this._templates.upload_file
     })
+    
     data.upload_policy = this.selectStoragePolicy();
     data.options = this.options
     return data;
@@ -171,7 +192,6 @@ define(['jquery.fileupload-ui'], {
     this.form.on('fileuploadfail',      this.onFail);
     this.form.on('fileuploadsuccess',   this.onSuccess);
     this.form.on('fileuploaddone',      this.onDone);
-
   },
 
   start: function () {
@@ -226,7 +246,7 @@ define(['jquery.fileupload-ui'], {
   },
 
   onFail: function (e, data) {
-    this.$el.find('.error').text("Error :#{data.errorThrown}");
+    this.$el.find('.error').text("Error :"+data.errorThrown);
   },
 
   onDone: function (e, data) {
@@ -257,57 +277,8 @@ define(['jquery.fileupload-ui'], {
   },
 
   initialize: function () {
+
     _.bindAll(this);
-      // /*
-      //  * jQuery plugin adapter for CamanJS
-      //  */
-      // if (window.jQuery) {
-      //   window.jQuery.fn.caman = function (callback) {
-      //     return this.each(function () {
-      //       Caman(this, callback);
-      //     });
-      //   };
-      // }
-
-      // var $input  = $('#input');
-      // var $thumbs = $('#thumbs');
-      // var $file_input = $('#file_input');
-      // var $canvas = null;
-      // var filters = ["vintage", "lomo", "clarity", "sinCity", "sunrise", "crossProcess", "orangePeel", "love", "grungy", "jarques", "pinhole", "oldBoot", "glowingSun", "hazyDays", "herMajesty", "nostalgia", "hemingway", "concentrate"];
-
-      // var renderImage = function renderImage(source, filter){
-      //   source.caman(function() {
-      //     this.revert();
-      //     this[filter]();
-      //     this.render();
-      //   });
-      // }
-
-      // var loadImage = function loadImage(canvas){
-      //   $canvas = $(canvas);
-      //   $input.empty().append($canvas);
-      //   var $_thumbs = $('<div>').addClass('thumbs');
-      //   for (var i = filters.length - 1; i >= 0; i--) {
-      //     var f = filters[i]
-      //     var c = document.createElement('canvas');
-      //     c.width = c.height = 50;
-      //     var ctx = c.getContext('2d');
-      //     ctx.drawImage(canvas, 0, 0, 50, 50*canvas.height/canvas.width);
-      //     var $c = $(c).addClass('thumb').addClass(f).data('filter',f);
-      //     renderImage($c,f);
-      //     $c.appendTo($_thumbs);
-      //   };
-      //   $thumbs.empty().append($_thumbs);
-      // }
-
-      // $thumbs.on('click','.thumb',function(e){
-      //   var f = $(this).data('filter');
-      //   renderImage($canvas, f);
-      // })
-
-      // $file_input.on('change', function(e){
-      //   window.loadImage(e.target.files[0], loadImage, { maxWidth: 600, canvas:true, noRevoke:true });
-      // });
 
   }
 });
