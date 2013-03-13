@@ -16,7 +16,7 @@ module.exports = function (grunt) {
 
   var pkg = grunt.file.readJSON('component.json');
 
-  var port = 3001;
+  var PORT = 3001;
 
   // ==========================================================================
   // Project configuration
@@ -87,7 +87,7 @@ module.exports = function (grunt) {
     connect: {
       server: {
         options: {
-          port: port,
+          port: PORT,
         }
       }
     },
@@ -95,7 +95,7 @@ module.exports = function (grunt) {
       client: {
         options: {
           baseUrl: '.',
-          // optimize: 'none',
+          optimize: 'none',
           preserveLicenseComments: true,
           paths: {
             aura:           'components/aura/dist',
@@ -135,7 +135,7 @@ module.exports = function (grunt) {
       remote: {
         options: {
           baseUrl: '.',
-          // optimize: 'none',
+          optimize: 'none',
           preserveLicenseComments: true,
           paths: {
             aura:               'components/aura/dist',
@@ -227,8 +227,10 @@ module.exports = function (grunt) {
       }
     },
     mocha: {
-      hull: {
-        src: ["spec/index.html"]
+      all: {
+        options: {
+          urls: ['http://localhost:<%= PORT %>/spec/index.html']
+        }
       }
     },
     watch: {
@@ -333,7 +335,7 @@ module.exports = function (grunt) {
   grunt.registerTask('build_client', ['clean', 'coffee:client', 'version', 'requirejs:client']);
   grunt.registerTask('build_libs', ['build_client', 'build_remote']);
   grunt.registerTask('build', ['build_libs', 'hull_widgets', 'compass:prod']);
-  grunt.registerTask('default', ['connect', 'build', 'mocha', 'watch']);
+  grunt.registerTask('default', ['connect', 'mocha', 'build', 'watch']);
   grunt.registerTask('dist', ['build', 'dox']);
   grunt.registerTask('deploy', ['dist', 'describe', 's3']);
 
