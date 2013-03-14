@@ -1,15 +1,6 @@
 <div class="hull-comments">
 
-  <div class="hull-comments__form">
-    {{#if loggedIn}}
-      <textarea class="hull-comments__text" placeholder="Write something..."></textarea>
-      <button data-hull-action="comment" class="hull-btn">Send</button>
-    {{else}}
-      <div data-hull-widget="identity@hull"></div>
-    {{/if}}
-  </div>
 
-  <hr class="hull-rule">
 
   {{#if comments}}
     <ul class="hull-comments__list">
@@ -37,4 +28,17 @@
       oops... no comments for the moment
     </div>
   {{/comments}}
+  
+  <hr class="hull-rule">
+  
+  <div class="hull-comments__form">
+    {{#if loggedIn}}
+      <textarea class="hull-comments__text" placeholder="Write something..."></textarea>
+      <button data-hull-action="comment" class="hull-btn">Send</button>
+    {{else}}
+      <div data-hull-widget="identity@hull"></div>
+    {{/if}}
+  </div>
+
+  
 </div>
