@@ -1,3 +1,15 @@
+/*
+* This widget allow you to add/remove an item in a list
+*
+* ## Parameters :
+*
+* - ``list_name``: the name of the list you want to use
+*
+* ## Template
+*
+* - ``list_toggle``:  Displays a remove button or an add button, depending on its listed in state
+*
+*/
 define({
   type: "Hull",
 
