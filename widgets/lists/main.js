@@ -1,26 +1,26 @@
 /**
- * Widgets Lists
  *
  * In Hull, a list can contain any number of objects of any type. Lists can be heterogeneous,
  * that is to say a list can contain achievements, people or comments altogether.
- * 
- * ### Parameters
  *
- * ```id```: The id of the list you want to display
+ * ## Parameters
  *
- * ### Templates
+ * - ``id``: The id of the list you want to display
  *
- * * ```lists```: How the contents of the list should be displayed
+ * ## Templates
  *
- * ### Datasources
+ * - ``lists``: How the contents of the list should be displayed
  *
- * ```lists```: Contains the contents of the list for which the widget has been instanciated
- * 
- * ### Events:
+ * ## Datasources
  *
- * ```form submit```: When the user submits the form included in the template, a list is created with the properties defined in the forms
+ * - ``lists``: Contains the contents of the list for which the widget has been instanciated
+ *
+ * ## Events:
+ *
+ * - ``form submit``: When the user submits the form included in the template, a list is created with the properties defined in the forms
  *
  * @TODO Don't use DOM events, use widget acions instead
+ *
  */
 define({
   type: "Hull",
