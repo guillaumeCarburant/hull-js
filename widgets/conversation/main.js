@@ -1,6 +1,6 @@
 /**
  * ## Conversation
- * View a conversation's messages and allow users to reply to the thread. 
+ * View a conversation's messages and allow users to reply to the thread.
  *
  * ## Example
  *
@@ -87,13 +87,13 @@ Hull.define({
       data.participants = data.conversation.participants;
       this.sandbox.util._.each(data.messages, function(m) {
         m.isDeletable = (m.actor.id === this.data.me.id);
-        
+
         var last_read = data.conversation.last_read;
         if(last_read instanceof Object){
           last_read = last_read[this.data.me.id];
-        } 
+        }
         m.isNew = !m.isMe && (last_read ? m.id > last_read : true);
-        
+
         return m;
       }, this);
       data.isFollowing = this.sandbox.util._.find(data.participants, function(p) {
@@ -125,34 +125,35 @@ Hull.define({
       }
     }, this), 2000);
   },
-  toggleLoading: function ($el) {
+
+  toggleLoading: function () {
     "use strict";
-    var $form = $el.toggleClass('is-loading');
-    var $btn = $form.find('.btn');
+    console.warn("Toggle loading with", this);
+    var $form = this.$el.find('form');
+    $form.toggleClass('is-loading');
+    var $btn = $form.find('[data-hull-action="message"]');
     $btn.attr('disabled', !$btn.attr('disabled'));
     var $textarea = $form.find('textarea');
     $textarea.attr('disabled', !$textarea.attr('disabled'));
   },
-  
-  postMessage: function (e/*, data*/) {
-    "use strict";
-    e.preventDefault();
-    var $formWrapper = this.$el.find('.hull-conversation__form');
-    var $form = $formWrapper.find('form');
-    var $media = $formWrapper.find('.media');
-    var formData = this.sandbox.dom.getFormData($form);
-    var description = formData.description;
 
-    this.toggleLoading($formWrapper);
-    if (description && description.length > 0) {
-      var cid = $media.data('hull-conversation-id');
-      var attributes = { body: description };
-      this.api(cid + '/messages', 'post', attributes).then(this.sandbox.util._.bind(function() {
-        this.toggleLoading($formWrapper);
-        this.render();
-      }, this));
+  postMessage: function (e, action) {
+    "use strict";
+    var self = this;
+    e.preventDefault();
+    var formData = this.sandbox.dom.getFormData(this.$el.find('form'));
+    var description = formData.description;
+    this.toggleLoading();
+    console.warn("FormData: ", formData)
+    if (this.options.id && formData && formData.body) {
+      this.api(this.options.id + '/messages', 'post', { body: formData.body }).then(function() {
+        self.toggleLoading();
+        self.render();
+      }, function() {
+        self.toggleLoading();
+      });
     } else {
-      this.toggleLoading($formWrapper);
+      self.toggleLoading();
     }
   },
 
@@ -165,14 +166,14 @@ Hull.define({
       .parents('[data-hull-message-id="'+ id +'"]');
     this.api.delete(id).then(function () {$parent.remove();});
   },
-  
+
   deleteConvo: function(e, data) {
     "use strict";
     event.preventDefault();
     var id = data.data.id;
     this.api.delete(id).then(function () {$('.hull-conversation').html('Conversation deleted');});
   },
-  
+
   notification: function(e, data) {
     "use strict";
     var $notification = this.$el.find('input');
